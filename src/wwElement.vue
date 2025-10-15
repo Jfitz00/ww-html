@@ -26,6 +26,19 @@ export default {
             reset: false,
         };
     },
+    mounted() {
+        window.top.addEventListener('message', this.onPostMessage);
+    },
+    beforeUnmount() {
+        window.top.removeEventListener('message', this.onPostMessage);
+    },
+    methods: {
+        onPostMessage(event) {
+            console.log('[postMessage received]', event.origin, event.data);
+            wwLib.wwWorkflow.executeGlobal("08a59708-0a36-41cf-9329-615a40189098", { barcode: "1" });
+        }
+    },
+
     computed: {
         isEditing() {
             /* wwEditor:start */
