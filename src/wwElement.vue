@@ -26,19 +26,6 @@ export default {
             reset: false,
         };
     },
-    mounted() {
-        window.top.addEventListener('message', this.onPostMessage);
-    },
-    beforeUnmount() {
-        window.top.removeEventListener('message', this.onPostMessage);
-    },
-    methods: {
-        onPostMessage(event) {
-            console.log('[postMessage received]', event.origin, event.data);
-            wwLib.wwWorkflow.executeGlobal("08a59708-0a36-41cf-9329-615a40189098", { barcode: "1" });
-        }
-    },
-
     computed: {
         isEditing() {
             /* wwEditor:start */
@@ -75,6 +62,9 @@ export default {
         /* wwFront:start */
         wwLib.getFrontWindow().addEventListener('resize', this.reinit);
         /* wwFront:end */
+
+        //**Adding new event listener here
+        window.addEventListener('message', this.handlePostMessage);
     },
     watch: {
         scripts() {
@@ -93,6 +83,14 @@ export default {
                 wwLib.wwLog.error(error, 'error');
             }
         },
+
+        //**Handle Post Event
+        handlePostMessage(event) {
+
+            console.log('[postMessage received]', event.origin, event.data);
+            wwLib.wwWorkflow.executeGlobal('08a59708-0a36-41cf-9329-615a40189098', { barcode: '1' });
+        },
+
         async loadScripts() {
             if (window.__WW_IS_PRERENDER__) return;
             // Remove old scripts
@@ -138,6 +136,9 @@ export default {
         /* wwFront:start */
         wwLib.getFrontWindow().removeEventListener('resize', this.reinit);
         /* wwFront:end */
+
+        //**Clean up the event listener
+        window.removeEventListener('message', this.handlePostMessage);
     },
 };
 </script>
